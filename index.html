@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click the Box Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        #gameArea {
+            width: 600px;
+            height: 400px;
+            background-color: lightblue;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #000;
+        }
+        .box {
+            width: 50px;
+            height: 50px;
+            background-color: red;
+            position: absolute;
+            cursor: pointer;
+        }
+        #score {
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #000;
+        }
+        #time {
+            font-size: 20px;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+
+<div id="gameArea">
+    <div id="score">Score: 0</div>
+    <div id="time">Time: 30</div>
+</div>
+
+<script>
+    let gameArea = document.getElementById("gameArea");
+    let scoreDisplay = document.getElementById("score");
+    let timeDisplay = document.getElementById("time");
+    let score = 0;
+    let timeLeft = 30;
+    let gameInterval;
+    let timeInterval;
+
+    // Function to generate a random position within the game area
+    function getRandomPosition() {
+        let x = Math.random() * (gameArea.offsetWidth - 50); // Width of the box is 50px
+        let y = Math.random() * (gameArea.offsetHeight - 50); // Height of the box is 50px
+        return { x: x, y: y };
+    }
+
+    // Function to create a new box
+    function createBox() {
+        let box = document.createElement("div");
+        box.classList.add("box");
+
+        // Set a random position for the box
+        let position = getRandomPosition();
+        box.style.left = position.x + "px";
+        box.style.top = position.y + "px";
+
+        // Add click event to the box
+        box.addEventListener("click", () => {
+            score++;
+            scoreDisplay.innerText = "Score: " + score;
+            gameArea.removeChild(box); // Remove the box after it is clicked
+            createBox(); // Create a new box
+        });
+
+        // Add the box to the game area
+        gameArea.appendChild(box);
+    }
+
+    // Function to update the timer and end the game when time is up
+    function updateTime() {
+        timeLeft--;
+        timeDisplay.innerText = "Time: " + timeLeft;
+
+        if (timeLeft <= 0) {
+            clearInterval(gameInterval);
+            clearInterval(timeInterval);
+            alert("Game Over! Final Score: " + score);
+        }
+    }
+
+    // Start the game
+    function startGame() {
+        // Create the first box
+        createBox();
+
+        // Set interval to update the time every second
+        timeInterval = setInterval(updateTime, 1000);
+
+        // Set interval to create a new box every 2 seconds
+        gameInterval = setInterval(createBox, 2000);
+    }
+
+    startGame(); // Start the game when the page loads
+</script>
+
+</body>
+</html>
