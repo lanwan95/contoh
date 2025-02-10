@@ -3,119 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click the Box Game</title>
+    <title>Akses Kamera Saya</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            text-align: center;
+            background-color: #f0f8ff;
+            padding: 20px;
         }
-        #gameArea {
-            width: 600px;
-            height: 400px;
-            background-color: lightblue;
-            position: relative;
-            overflow: hidden;
-            border: 2px solid #000;
-        }
-        .box {
-            width: 50px;
-            height: 50px;
-            background-color: red;
-            position: absolute;
-            cursor: pointer;
-        }
-        #score {
-            font-size: 20px;
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            color: #000;
-        }
-        #time {
-            font-size: 20px;
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #000;
+        #video {
+            width: 80%;
+            border: 2px solid #ccc;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <h1>Akses Kamera Saya</h1>
+    <p>Ini adalah video langsung dari kamera Anda:</p>
 
-<div id="gameArea">
-    <div id="score">Score: 0</div>
-    <div id="time">Time: 30</div>
-</div>
+    <!-- Elemen Video untuk menampilkan stream dari kamera -->
+    <video id="video" autoplay></video>
 
-<script>
-    let gameArea = document.getElementById("gameArea");
-    let scoreDisplay = document.getElementById("score");
-    let timeDisplay = document.getElementById("time");
-    let score = 0;
-    let timeLeft = 30;
-    let gameInterval;
-    let timeInterval;
-
-    // Function to generate a random position within the game area
-    function getRandomPosition() {
-        let x = Math.random() * (gameArea.offsetWidth - 50); // Width of the box is 50px
-        let y = Math.random() * (gameArea.offsetHeight - 50); // Height of the box is 50px
-        return { x: x, y: y };
-    }
-
-    // Function to create a new box
-    function createBox() {
-        let box = document.createElement("div");
-        box.classList.add("box");
-
-        // Set a random position for the box
-        let position = getRandomPosition();
-        box.style.left = position.x + "px";
-        box.style.top = position.y + "px";
-
-        // Add click event to the box
-        box.addEventListener("click", () => {
-            score++;
-            scoreDisplay.innerText = "Score: " + score;
-            gameArea.removeChild(box); // Remove the box after it is clicked
-            createBox(); // Create a new box
-        });
-
-        // Add the box to the game area
-        gameArea.appendChild(box);
-    }
-
-    // Function to update the timer and end the game when time is up
-    function updateTime() {
-        timeLeft--;
-        timeDisplay.innerText = "Time: " + timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(gameInterval);
-            clearInterval(timeInterval);
-            alert("Game Over! Final Score: " + score);
+    <!-- Script untuk mengakses kamera -->
+    <script>
+        async function startVideo() {
+            try {
+                // Meminta izin untuk mengakses kamera dan mendapatkan stream
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                // Menampilkan stream kamera pada elemen video
+                document.getElementById('video').srcObject = stream;
+            } catch (err) {
+                // Menangani error jika izin ditolak atau kamera tidak tersedia
+                console.error('Error accessing the camera:', err);
+                alert('Gagal mengakses kamera. Pastikan Anda memberikan izin akses kamera.');
+            }
         }
-    }
 
-    // Start the game
-    function startGame() {
-        // Create the first box
-        createBox();
-
-        // Set interval to update the time every second
-        timeInterval = setInterval(updateTime, 1000);
-
-        // Set interval to create a new box every 2 seconds
-        gameInterval = setInterval(createBox, 2000);
-    }
-
-    startGame(); // Start the game when the page loads
-</script>
-
+        // Memulai video stream saat halaman dimuat
+        window.onload = startVideo;
+    </script>
 </body>
 </html>
